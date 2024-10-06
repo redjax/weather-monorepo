@@ -1,0 +1,7 @@
+[default]
+
+weatherapi_location_name = "London"
+
+[weatherapi]
+
+weatherapi_location_name = "<your-location>"
