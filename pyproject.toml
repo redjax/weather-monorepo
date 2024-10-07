@@ -18,7 +18,7 @@ distribution = false
 
 [tool.pdm.scripts]
 
-lock-install = { shell = "pdm lock && pdm install" }
+install-repo = { shell = "pdm lock && pdm install" }
 
 [tool.pdm.dev-dependencies]
 dev = ["ruff>=0.6.9", "uv>=0.4.18", "nox>=2024.4.15"]

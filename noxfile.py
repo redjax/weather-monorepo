@@ -168,7 +168,10 @@ Double check imports in __init__.py files, ruff removes unused imports by defaul
 def install_monorepo(session: nox.Session, pdm_ver: str = PDM_VER):
     log.info("Building & installing PDM monorepo")
 
+    log.info("Installing pdm in nox session")
+    session.install(f"pdm>={pdm_ver}")
+
     log.info("Locking dependencies")
-    session.run("pdm", "lock", external=True)
+    session.run("pdm", "lock", external=False)
     log.info("Installing monorepo with PDM")
-    session.run("pdm", "install", external=True)
+    session.run("pdm", "install", external=False)
