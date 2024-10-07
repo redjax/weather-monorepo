@@ -3,6 +3,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from core import setup
+from core.depends.db_depends import get_db_engine, get_db_uri, get_session_pool
+from core.db.settings import DB_SETTINGS
 import weatherapi_client
 
 from dynaconf import Dynaconf
@@ -24,7 +26,9 @@ def demo_weatherapi():
 
 
 def main():
-    demo_weatherapi()
+    # demo_weatherapi()
+
+    pass
 
 
 if __name__ == "__main__":
@@ -34,5 +38,9 @@ if __name__ == "__main__":
             "LOG_SILENCE_LOGGERS", default=["httpx", "hishel", "httpcore"]
         ),
     )
+
+    setup.setup_database()
+
+    log.debug(f"Database settings: {DB_SETTINGS.as_dict()}")
 
     main()

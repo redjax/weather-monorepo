@@ -1,3 +1,3 @@
 from __future__ import annotations
 
-from .__logging import setup_logging
+from .__setup import setup_logging, setup_database

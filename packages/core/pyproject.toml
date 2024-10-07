@@ -3,7 +3,10 @@ name = "core"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [{ name = "redjax", email = "none@none.com" }]
-dependencies = ["dynaconf>=3.2.6"]
+dependencies = [
+    "dynaconf>=3.2.6",
+    "sqlalchemy>=2.0.35",
+]
 requires-python = "==3.11.*"
 readme = "README.md"
 license = { text = "MIT" }
