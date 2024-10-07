@@ -1,0 +1,30 @@
+[project]
+name = "datalab"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [{ name = "redjax", email = "none@none.com" }]
+dependencies = [
+    "pandas>=2.2.3",
+    "ipykernel>=6.29.5",
+    "pyarrow>=17.0.0",
+    "sqlalchemy>=2.0.35",
+    "weatherapi-client @ file:///${PROJECT_ROOT}/../weatherapi-client",
+    "core @ file:///${PROJECT_ROOT}/../core",
+    "http-lib @ file:///${PROJECT_ROOT}/../http-lib",
+]
+requires-python = "==3.11.*"
+readme = "README.md"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "jupyter>=1.1.1",
+]

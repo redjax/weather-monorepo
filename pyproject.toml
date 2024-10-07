@@ -7,6 +7,8 @@ dependencies = [
     "http-lib @ file:///${PROJECT_ROOT}/packages/http-lib",
     "weatherapi-client @ file:///${PROJECT_ROOT}/packages/weatherapi-client",
     "core @ file:///${PROJECT_ROOT}/packages/core",
+    "celery-app @ file:///${PROJECT_ROOT}/packages/celery-app",
+    "datalab @ file:///${PROJECT_ROOT}/packages/datalab",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"
