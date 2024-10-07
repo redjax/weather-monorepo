@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:aa7f9683dd7a54450534965384e70f91657cae9b2db2f63596e6b91f0557cc0c"
+content_hash = "sha256:29525ddc9d8079190da430e4622a78e2319475ceaac1828b63f4432900745c84"
 
 [[metadata.targets]]
 requires_python = "==3.11.*"
@@ -87,6 +87,17 @@ dependencies = [
 files = [
     {file = "colorlog-6.8.2-py3-none-any.whl", hash = "sha256:4dcbb62368e2800cb3c5abd348da7e53f6c362dda502ec27c560b2e58a66bd33"},
     {file = "colorlog-6.8.2.tar.gz", hash = "sha256:3e3e079a41feb5a1b64f978b5ea4f46040a94f11f0e8bbb8261e3dbbeca64d44"},
+]
+
+[[package]]
+name = "core"
+version = "0.1.0"
+requires_python = "==3.11.*"
+path = "./packages/core"
+summary = "Default template for PDM package"
+groups = ["default"]
+dependencies = [
+    "dynaconf>=3.2.6",
 ]
 
 [[package]]
@@ -235,17 +246,6 @@ groups = ["dev"]
 files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
-]
-
-[[package]]
-name = "pkg-core"
-version = "0.1.0"
-requires_python = "==3.11.*"
-path = "./packages/pkg-core"
-summary = "Default template for PDM package"
-groups = ["default"]
-dependencies = [
-    "dynaconf>=3.2.6",
 ]
 
 [[package]]
@@ -402,8 +402,8 @@ path = "./packages/weatherapi-client"
 summary = "Default template for PDM package"
 groups = ["default"]
 dependencies = [
+    "core @ file:///${PROJECT_ROOT}/packages/core",
     "dynaconf>=3.2.6",
     "http-lib @ file:///${PROJECT_ROOT}/packages/http-lib",
-    "pkg-core @ file:///${PROJECT_ROOT}/packages/pkg-core",
     "pydantic>=2.9.2",
 ]

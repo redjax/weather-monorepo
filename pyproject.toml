@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Default template for PDM package"
 authors = [{ name = "redjax", email = "none@none.com" }]
 dependencies = [
-    "pkg-core @ file:///${PROJECT_ROOT}/packages/pkg-core",
     "http-lib @ file:///${PROJECT_ROOT}/packages/http-lib",
     "weatherapi-client @ file:///${PROJECT_ROOT}/packages/weatherapi-client",
+    "core @ file:///${PROJECT_ROOT}/packages/core",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"

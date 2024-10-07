@@ -2,7 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from pkg_core import setup
+from core import setup
 import weatherapi_client
 
 from dynaconf import Dynaconf

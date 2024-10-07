@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
-        "./packages/pkg-core/src",
-        "./packages/weatherapi-client/src"
+        "./packages/core/src",
+        "./packages/weatherapi-client/src",
+        "./packages/http-lib/src"
     ]
 }
