@@ -5,9 +5,9 @@ import time
 
 log = logging.getLogger(__name__)
 
-from weatherapi_client.domain.location import LocationIn, LocationOut
-from weatherapi_client.domain.schemas import APIResponseCurrentWeather
-from weatherapi_client.domain.weather.current import (
+from domain.location import LocationIn, LocationOut
+from domain.schemas import APIResponseCurrentWeather
+from domain.weather.current import (
     CurrentWeatherAirQualityIn,
     CurrentWeatherAirQualityOut,
     CurrentWeatherConditionIn,
