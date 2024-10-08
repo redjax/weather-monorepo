@@ -2,9 +2,13 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from .modules.demo import demo_app
+
 from cyclopts import App
 
-app = App()
+app = App(help="CLI application for the weather-monorepo project.")
+
+app.command(demo_app)
 
 
 @app.command
