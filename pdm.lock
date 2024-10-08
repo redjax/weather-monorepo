@@ -5,7 +5,7 @@
 groups = ["default", "data", "database", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:cbc9b145e1cd0157f1a728555977201e00868a2ad9beb27dc380a71bb1c4cf7d"
+content_hash = "sha256:a4aa42cf41dd072800bcea758ad5c55a98ab5d803978ada9d3fbdf312dd930bb"
 
 [[metadata.targets]]
 requires_python = "==3.11.*"
@@ -185,7 +185,7 @@ files = [
 name = "core"
 version = "0.1.0"
 requires_python = "==3.11.*"
-path = "./packages/core"
+path = "./shared/core"
 summary = "Default template for PDM package"
 groups = ["default"]
 
@@ -237,7 +237,7 @@ files = [
 name = "domain"
 version = "0.1.0"
 requires_python = "==3.11.*"
-path = "./packages/domain"
+path = "./shared/domain"
 summary = "Default template for PDM package"
 groups = ["default"]
 
@@ -327,7 +327,7 @@ files = [
 name = "http-lib"
 version = "0.1.0"
 requires_python = "==3.11.*"
-path = "./packages/http-lib"
+path = "./shared/http-lib"
 summary = "Common HTTP library code"
 groups = ["default"]
 
