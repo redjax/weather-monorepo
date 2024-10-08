@@ -1,7 +1,10 @@
 {
     "python.analysis.extraPaths": [
-        "./packages/core/src",
+        "./shared/core/src",
         "./packages/weatherapi-client/src",
-        "./packages/http-lib/src"
+        "./shared/http-lib/src",
+        "./shared/domain/src",
+        "./packages/celeryapp/src",
+        "./packages/datalab/src"
     ]
 }
