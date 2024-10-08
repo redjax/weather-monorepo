@@ -8,9 +8,9 @@ log = logging.getLogger(__name__)
 import http_lib
 from core.depends.db_depends import get_session_pool
 from . import requests
-from ..domain.location import LocationIn, LocationModel, LocationOut, LocationRepository
-from ..domain.schemas import APIResponseCurrentWeather  # , APIResponseWeatherForecast
-from ..domain.weather.current import (
+from domain.location import LocationIn, LocationModel, LocationOut, LocationRepository
+from domain.schemas import APIResponseCurrentWeather  # , APIResponseWeatherForecast
+from domain.weather.current import (
     CurrentWeatherAirQualityIn,
     CurrentWeatherAirQualityModel,
     CurrentWeatherAirQualityOut,
@@ -24,7 +24,7 @@ from ..domain.weather.current import (
     CurrentWeatherOut,
     CurrentWeatherRepository,
 )
-from ..domain.weather.forecast import (
+from domain.weather.forecast import (
     ForecastJSONRepository,
     ForecastJSONIn,
     ForecastJSONModel,

@@ -5,10 +5,10 @@ import time
 
 log = logging.getLogger(__name__)
 
-from weatherapi_client.domain.location import LocationIn, LocationOut
-from weatherapi_client.domain.schemas import APIResponseForecastWeather
-from weatherapi_client.domain.weather.forecast import ForecastJSONIn, ForecastJSONOut
-from weatherapi_client.domain.weather.weather_alerts import (
+from domain.location import LocationIn, LocationOut
+from domain.schemas import APIResponseForecastWeather
+from domain.weather.forecast import ForecastJSONIn, ForecastJSONOut
+from domain.weather.weather_alerts import (
     WeatherAlertIn,
     WeatherAlertOut,
     WeatherAlertsIn,

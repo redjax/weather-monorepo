@@ -3,11 +3,7 @@ name = "celery-app"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [{ name = "redjax", email = "none@none.com" }]
-dependencies = [
-    "weatherapi-client @ file:///${PROJECT_ROOT}/../weatherapi-client",
-    "celery>=5.4.0",
-    "redis>=5.1.1",
-]
+dependencies = []
 requires-python = "==3.11.*"
 readme = "README.md"
 license = { text = "MIT" }
