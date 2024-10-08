@@ -1,16 +1,16 @@
-import typing as t
+from __future__ import annotations
+
 import datetime as dt
 import logging
+import typing as t
 
 log = logging.getLogger(__name__)
 
 from core.db import Base, annotated
-
 import sqlalchemy as sa
-import sqlalchemy.orm as so
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as so
 from sqlalchemy.types import JSON
-
 
 class ForecastJSONModel(Base):
     __tablename__ = "weatherapi_forecast_json"

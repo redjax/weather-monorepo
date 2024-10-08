@@ -4,9 +4,8 @@ import logging
 
 log: logging.Logger = logging.getLogger(__name__)
 
-from core.depends import db_depends
 from core import db
-
+from core.depends import db_depends
 
 def setup_logging(
     level: str = "INFO",

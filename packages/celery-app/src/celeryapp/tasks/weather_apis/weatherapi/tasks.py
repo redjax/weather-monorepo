@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 import time
@@ -5,11 +7,10 @@ import typing as t
 
 log = logging.getLogger(__name__)
 
-import weatherapi_client
-from core.depends.db_depends import get_session_pool
 from celeryapp.celery_main import celery_app
+from core.depends.db_depends import get_session_pool
 import domain
-
+import weatherapi_client
 
 @celery_app.task(name="request_current_weather")
 def task_current_weather(

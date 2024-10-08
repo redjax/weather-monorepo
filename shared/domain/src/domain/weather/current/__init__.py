@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import schemas, models, repository
+from . import models, repository, schemas
 from .models import (
     CurrentWeatherAirQualityModel,
     CurrentWeatherConditionModel,

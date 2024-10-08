@@ -1,33 +1,25 @@
 from __future__ import annotations
 
 from . import location, weather
-from .schemas import APIResponseCurrentWeather, APIResponseForecastWeather
-
 from .location import LocationIn, LocationModel, LocationOut, LocationRepository
-
-from .weather.current import (
-    CurrentWeatherIn,
-    CurrentWeatherOut,
-    CurrentWeatherModel,
-    CurrentWeatherRepository,
-)
+from .schemas import APIResponseCurrentWeather, APIResponseForecastWeather
 from .weather.current import (
     CurrentWeatherAirQualityIn,
     CurrentWeatherAirQualityModel,
     CurrentWeatherAirQualityOut,
     CurrentWeatherAirQualityRepository,
-)
-
-from .weather.current import (
     CurrentWeatherConditionIn,
     CurrentWeatherConditionModel,
     CurrentWeatherConditionOut,
     CurrentWeatherConditionRepository,
+    CurrentWeatherIn,
+    CurrentWeatherModel,
+    CurrentWeatherOut,
+    CurrentWeatherRepository,
 )
-
 from .weather.forecast import (
     ForecastJSONIn,
-    ForecastJSONOut,
     ForecastJSONModel,
+    ForecastJSONOut,
     ForecastJSONRepository,
 )

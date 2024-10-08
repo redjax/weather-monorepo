@@ -43,7 +43,7 @@ VENV_DIR = Path("./.venv").resolve()
 
 ## At minimum, these paths will be checked by your linters
 #  Add new paths with nox_utils.append_lint_paths(extra_paths=["..."],)
-DEFAULT_LINT_PATHS: list[str] = ["src", "tests", "scripts", "packages"]
+DEFAULT_LINT_PATHS: list[str] = ["src", "tests", "scripts", "packages", "shared"]
 ## Set directory for requirements.txt file output
 REQUIREMENTS_OUTPUT_DIR: Path = Path("./")
 
@@ -93,8 +93,7 @@ def check_path_exists(p: t.Union[str, Path] = None) -> bool:
 
 @nox.session(python=[DEFAULT_PYTHON], name="dev-env")
 def dev(session: nox.Session) -> None:
-    """
-    Sets up a python development environment for the project.
+    """Sets up a python development environment for the project.
 
     This session will:
     - Create a python virtualenv for the session
@@ -103,7 +102,6 @@ def dev(session: nox.Session) -> None:
     - Invoke the python interpreter from the global project environment to install
       the project and all it's development dependencies.
     """
-
     session.install("virtualenv")
     # the VENV_DIR constant is explained above
     session.run("virtualenv", os.fsdecode(VENV_DIR), silent=True)

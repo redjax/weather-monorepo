@@ -7,11 +7,9 @@ import typing as t
 log = logging.getLogger(__name__)
 
 from core.db import Base, annotated
-
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as so
-
 
 class LocationModel(Base):
     __tablename__ = "weatherapi_location"

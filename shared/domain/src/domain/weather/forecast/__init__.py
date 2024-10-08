@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import schemas, models, repository
-from .schemas import ForecastJSONIn, ForecastJSONOut
+from . import models, repository, schemas
 from .models import ForecastJSONModel
 from .repository import ForecastJSONRepository
+from .schemas import ForecastJSONIn, ForecastJSONOut

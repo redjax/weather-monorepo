@@ -5,6 +5,11 @@ import time
 
 log = logging.getLogger(__name__)
 
+from weatherapi_client.settings import weatherapi_settings
+
+from . import requests
+from .__methods import save_forecast, save_location
+
 from domain.location import LocationIn, LocationOut
 from domain.schemas import APIResponseForecastWeather
 from domain.weather.forecast import ForecastJSONIn, ForecastJSONOut
@@ -14,14 +19,8 @@ from domain.weather.weather_alerts import (
     WeatherAlertsIn,
     WeatherAlertsOut,
 )
-from weatherapi_client.settings import weatherapi_settings
-from .__methods import save_forecast, save_location
-
-from . import requests
-
 import http_lib
 import httpx
-
 
 def get_weather_forecast(
     location: str = weatherapi_settings.location,
