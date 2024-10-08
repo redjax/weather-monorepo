@@ -5,21 +5,23 @@ import time
 
 log = logging.getLogger(__name__)
 
-from weatherapi_client.domain.location import LocationIn, LocationOut
-from weatherapi_client.domain.schemas import APIResponseForecastWeather
-from weatherapi_client.domain.weather.forecast import ForecastJSONIn, ForecastJSONOut
-from weatherapi_client.domain.weather.weather_alerts import (
+from domain.location import LocationIn, LocationOut
+from domain.schemas import APIResponseForecastWeather
+from domain.weather.forecast import ForecastJSONIn, ForecastJSONOut
+from domain.weather.weather_alerts import (
     WeatherAlertIn,
     WeatherAlertOut,
     WeatherAlertsIn,
     WeatherAlertsOut,
 )
 from weatherapi_client.settings import weatherapi_settings
+from .__methods import save_forecast, save_location
 
 from . import requests
 
 import http_lib
 import httpx
+
 
 def get_weather_forecast(
     location: str = weatherapi_settings.location,
@@ -33,6 +35,7 @@ def get_weather_forecast(
     max_retries: int = 3,
     retry_sleep: int = 5,
     retry_stagger: int = 3,
+    save_to_db: bool = True,
 ):
     if days > 10:
         log.warning(
@@ -109,5 +112,18 @@ def get_weather_forecast(
     api_response = APIResponseForecastWeather(
         forecast=forecast_schema, location=location_schema
     )
+
+    if save_to_db:
+        log.info("Saving forecast to database")
+
+        try:
+            db_forecast: ForecastJSONOut = save_forecast(forecast_schema)
+
+            return db_forecast
+        except Exception as exc:
+            msg = f"({type(exc)}) Error saving forecast to database. Details: {exc}"
+            log.error(msg)
+
+            raise exc
 
     return api_response

@@ -1,0 +1,30 @@
+[default]
+
+celery_broker_host = "localhost"
+celery_broker_port = 5672
+celery_broker_user = "rabbitmq"
+## Set this value in .secrets.toml
+# celery_broker_password = ""
+
+celery_backend_host = "localhost"
+celery_backend_port = 6379
+
+celery_worker_log_level = "INFO"
+celery_worker_uid = 0
+celery_worker_gid = 0
+
+celery_beat_log_level = "INFO"
+
+celery_tz = "Etc/UTC"
+
+[celery]
+
+celery_broker_host = "<your-celery-broker-host-addr>"
+celery_broker_port = 0
+celery_broker_user = "<your-celery-broker-username>"
+
+celery_backend_host = "<your-celery-backend-host-addr>"
+celery_backend_port = 0
+
+celery_worker_log_level = "INFO"
+celery_beat_log_level = "INFO"

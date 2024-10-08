@@ -5,9 +5,9 @@ import time
 
 log = logging.getLogger(__name__)
 
-from weatherapi_client.domain.location import LocationIn, LocationOut
-from weatherapi_client.domain.schemas import APIResponseCurrentWeather
-from weatherapi_client.domain.weather.current import (
+from domain.location import LocationIn, LocationOut
+from domain.schemas import APIResponseCurrentWeather
+from domain.weather.current import (
     CurrentWeatherAirQualityIn,
     CurrentWeatherAirQualityOut,
     CurrentWeatherConditionIn,
@@ -16,11 +16,13 @@ from weatherapi_client.domain.weather.current import (
     CurrentWeatherOut,
 )
 from weatherapi_client.settings import weatherapi_settings
+from .__methods import save_current_weather, save_forecast, save_location
 
 from . import requests
 
 import http_lib
 import httpx
+
 
 def get_current_weather(
     location: str = weatherapi_settings.location,
@@ -32,12 +34,13 @@ def get_current_weather(
     max_retries: int = 3,
     retry_sleep: int = 5,
     retry_stagger: int = 3,
+    save_to_db: bool = True,
 ) -> APIResponseCurrentWeather | None:
     current_weather_request: httpx.Request = requests.return_current_weather_request(
         api_key=api_key, location=location, include_aqi=include_aqi, headers=headers
     )
 
-    log.info(f"Requesting currentw weather for location: {location}")
+    log.info(f"Requesting current weather for location: {location}")
 
     with http_lib.get_http_controller(use_cache=use_cache) as http:
         try:
@@ -101,5 +104,20 @@ def get_current_weather(
         location=location, weather=current_weather
     )
     # log.debug(f"API response: {api_response}")
+
+    if save_to_db:
+        log.info("Saving current weather to database")
+        try:
+            current_weather_out: CurrentWeatherOut | None = save_current_weather(
+                current_weather_schema=api_response.weather,
+                location_schema=api_response.location,
+            )
+        except Exception as exc:
+            msg = f"({type(exc)}) Error saving current weather response. Details: {exc}"
+            log.error(msg)
+
+    log.info(
+        f"Success requesting current weather for location '{location}' from WeatherAPI"
+    )
 
     return api_response
