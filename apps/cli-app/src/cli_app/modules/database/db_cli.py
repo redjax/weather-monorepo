@@ -1,6 +1,11 @@
 from cyclopts import App
 
-from scripts import save_db_tables_to_parquet
+from scripts import (
+    save_db_tables_to_parquet,
+    count_current_weather_rows,
+    count_weather_forecast_rows,
+)
+import weatherapi_client
 
 db_app = App(
     name="database",
@@ -36,10 +41,41 @@ def backup_db_tables_to_parquet():
 @db_count_app.command(name="current", group="count")
 def count_current_weather():
     """Count number of rows in the current weather database table."""
-    pass
+    print("Getting count of current weather entities from database...")
+
+    try:
+        current_weather_count = count_current_weather_rows.run(
+            location_name=weatherapi_client.settings.weatherapi_settings.location,
+            task_check_sleep=2,
+        )
+
+        print(
+            f"Found {current_weather_count['count']} current weather entry/ies in database"
+        )
+    except Exception as exc:
+        msg = f"({type(exc)}) Error counting current weather entities in database. Details: {exc}"
+        print(f"[ERROR] {msg}")
+
+        exit(1)
 
 
 @db_count_app.command(name="forecast", group="count")
 def count_weather_forecast():
     """Count number of rows in the weather forecast database table."""
-    pass
+    print("Getting number of rows in the weather forecast database table")
+
+    try:
+        weather_forecast_count = count_weather_forecast_rows.run(
+            location_name=weatherapi_client.settings.weatherapi_settings.location,
+            task_check_sleep=2,
+        )
+
+        print(
+            f"Found {weather_forecast_count['count']} weather forecast entry/ies in database"
+        )
+
+    except Exception as exc:
+        msg = f"({type(exc)}) Error counting weather forecast entities in database. Details: {exc}"
+        print(f"[ERROR] {msg}")
+
+        exit(1)

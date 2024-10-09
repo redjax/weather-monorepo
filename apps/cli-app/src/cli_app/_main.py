@@ -2,9 +2,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from .modules.demo import demo_app
+# from .modules.demo import demo_app
 from .modules.database import db_app
 from .modules.celery import celery_cli_app
+from .modules.weather import weather_app
 
 
 from cyclopts import App
@@ -13,9 +14,10 @@ from cyclopts import App
 app = App(help="CLI application for the weather-monorepo project.")
 
 ## Mount CLI sub-apps
-app.command(demo_app)
+# app.command(demo_app)
 app.command(db_app)
 app.command(celery_cli_app)
+app.command(weather_app)
 
 
 @app.command

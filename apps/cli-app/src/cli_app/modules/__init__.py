@@ -1,1 +1,1 @@
-from . import demo, database, celery
+from . import demo, database, celery, weather

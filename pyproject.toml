@@ -38,6 +38,7 @@ distribution = false
 [tool.pdm.scripts]
 
 install-repo = { shell = "pdm lock && pdm install" }
+cli = { cmd = "python cli.py" }
 
 [tool.pdm.dev-dependencies]
 dev = ["ruff>=0.6.9", "uv>=0.4.18", "nox>=2024.4.15"]
