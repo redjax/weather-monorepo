@@ -1,6 +1,8 @@
 from cyclopts import App
 
-demo_app = App(name="demo", help="Demo functionality. Remove this eventually!")
+demo_app = App(
+    name="demo", help="Demo functionality. Remove this eventually!", group="demo"
+)
 
 
 @demo_app.command(group="demo")

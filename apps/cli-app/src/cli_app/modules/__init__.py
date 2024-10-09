@@ -1,1 +1,1 @@
-from . import demo
+from . import demo, database, celery

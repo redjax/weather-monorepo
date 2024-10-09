@@ -1,1 +1,1 @@
-from ._cli import demo_app
+from .demo_cli import demo_app
