@@ -7,6 +7,16 @@ log: logging.Logger = logging.getLogger(__name__)
 from core import db
 from core.depends import db_depends
 
+from dynaconf import Dynaconf
+
+LOGGING_SETTINGS = Dynaconf(
+    environments=True,
+    env="logging",
+    envvar_prefix="LOG",
+    settings_files=["settings.toml", ".secrets.toml"],
+)
+
+
 def setup_logging(
     level: str = "INFO",
     format: str = "%(asctime)s | [%(levelname)s] | (%(name)s): %(module)s.%(funcName)s:%(lineno)s |> %(message)s",

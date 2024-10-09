@@ -1,5 +1,7 @@
 from cyclopts import App
 
+from scripts import save_db_tables_to_parquet
+
 db_app = App(
     name="database",
     help="Database functions like getting a count of all current weather items, or running database maintenance tasks.",
@@ -20,7 +22,15 @@ db_app.command(db_count_app)
 @db_backup_app.command(name="tables-to-parquet", group="backup")
 def backup_db_tables_to_parquet():
     """Backup tables in the database to .parquet files."""
-    pass
+    print("Backing up database tables to .parquet files")
+
+    try:
+        save_db_tables_to_parquet.run(save_tables=save_db_tables_to_parquet.SAVE_TABLES)
+    except Exception as exc:
+        msg = f"({type(exc)}) Error backing up database tables to .parquet files. Details: {exc}"
+        print(f"[ERROR] {msg}")
+
+        exit(1)
 
 
 @db_count_app.command(name="current", group="count")

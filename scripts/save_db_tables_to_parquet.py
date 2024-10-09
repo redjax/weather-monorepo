@@ -6,7 +6,7 @@ import typing as t
 log = logging.getLogger(__name__)
 
 from core.setup import setup_database, setup_logging
-from core.setup.__setup import LOGGING_SETTINGS
+from core.setup import LOGGING_SETTINGS
 import datalab
 import pandas as pd
 

@@ -6,6 +6,7 @@ from .modules.demo import demo_app
 from .modules.database import db_app
 from .modules.celery import celery_cli_app
 
+
 from cyclopts import App
 
 ## Create main CLI app
