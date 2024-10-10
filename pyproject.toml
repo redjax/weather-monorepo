@@ -23,6 +23,7 @@ dependencies = [
     "alembic>=1.13.3",
     "psycopg2-binary>=2.9.9",
     "cyclopts>=2.9.9",
+    "rich>=13.9.2",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"
@@ -39,6 +40,7 @@ distribution = false
 
 install-repo = { shell = "pdm lock && pdm install" }
 cli = { cmd = "python cli.py" }
+# start-dev-containers = { shell = ""}
 
 [tool.pdm.dev-dependencies]
 dev = ["ruff>=0.6.9", "uv>=0.4.18", "nox>=2024.4.15"]

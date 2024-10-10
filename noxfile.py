@@ -173,3 +173,40 @@ def install_monorepo(session: nox.Session, pdm_ver: str = PDM_VER):
     session.run("pdm", "lock", external=False)
     log.info("Installing monorepo with PDM")
     session.run("pdm", "install", external=False)
+
+
+@nox.session(name="init-container-data", tags=["init", "docker"])
+def init_container_data_dir(session: nox.Session):
+    log.info("Initializing vols/ directory")
+
+    root = Path("./containers")
+
+    paths = [
+        Path(f"{root}/vols/pgadmin"),
+        Path(f"{root}/vols/postgres"),
+        Path(f"{root}/vols/redis"),
+    ]
+
+    for p in paths:
+        p = Path(f"{p}/data")
+
+        if not p.exists():
+            log.info(f"Creating directory: {p}/data")
+            p.mkdir(parents=True, exist_ok=True)
+
+
+@nox.session(name="run-dev-containers", tags=["docker"])
+def run_dev_containers(session: nox.Session, pdm_ver: str = PDM_VER):
+    log.info("Installing pdm in nox session")
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    # session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_dev_containers.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running Docker dev containers")
+        session.run("python", script_path)
