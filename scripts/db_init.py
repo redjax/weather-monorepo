@@ -21,6 +21,7 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as so
 
+
 def init_pg_database(create_dbs: list[str], engine: sa.Engine = None):
     log.info("START init postgres database")
 
@@ -164,6 +165,6 @@ if __name__ == "__main__":
     # DB_URI: sa.URL = get_db_uri(database="postgres")
     DB_URI: sa.URL = get_db_uri()
     DB_ECHO: bool = False
-    CREATE_DATABASES: list[str] = ["weathersched", "weathersched_dev"]
+    CREATE_DATABASES: list[str] = ["weather", "weather_dev"]
 
     main(db_uri=DB_URI, db_echo=DB_ECHO, create_dbs=CREATE_DATABASES)
