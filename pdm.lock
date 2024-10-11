@@ -5,7 +5,7 @@
 groups = ["default", "data", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:b981e0cc66d8b06603f2d2e858a8fb1f861c2dbbca438b9570bcf57a793324b0"
+content_hash = "sha256:7d76a161cb3a87b97195199ba86e38dbc5b4b1189d4ed25159278ff21b7bc698"
 
 [[metadata.targets]]
 requires_python = "==3.11.*"
@@ -180,7 +180,7 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./packages/celery-app"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "certifi"
@@ -220,12 +220,12 @@ files = [
 ]
 
 [[package]]
-name = "cli"
+name = "cli-app"
 version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./apps/cli-app"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "click"
@@ -330,7 +330,7 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./shared/core"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "cyclopts"
@@ -357,7 +357,7 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./packages/datalab"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "debugpy"
@@ -424,7 +424,7 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./shared/domain"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "dynaconf"
@@ -514,7 +514,7 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./shared/http-lib"
 summary = "Common HTTP library code"
-groups = ["default"]
+groups = ["dev"]
 
 [[package]]
 name = "httpcore"
@@ -1353,4 +1353,4 @@ version = "0.1.0"
 requires_python = "==3.11.*"
 path = "./packages/weatherapi-client"
 summary = "Default template for PDM package"
-groups = ["default"]
+groups = ["dev"]
