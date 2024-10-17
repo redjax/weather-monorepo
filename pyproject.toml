@@ -17,6 +17,7 @@ dependencies = [
     "psycopg2-binary>=2.9.9",
     "cyclopts>=2.9.9",
     "rich>=13.9.2",
+    "db-migrate @ file:///${PROJECT_ROOT}/apps/db-migrate",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"

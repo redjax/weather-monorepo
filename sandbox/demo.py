@@ -49,9 +49,7 @@ def demo_weather_forecast(save_to_db: bool = False):
         log.info("Saving weather forecast to database")
 
         try:
-            weatherapi_client.client.save_forecast(
-                forecast_schema=weather_forecast.forecast
-            )
+            weatherapi_client.client.save_forecast(forecast_schema=weather_forecast)
 
             log.info("[SUCCEESS] Saved weather forecast to database")
         except Exception as exc:

@@ -200,7 +200,7 @@ def run_dev_containers(session: nox.Session, pdm_ver: str = PDM_VER):
     log.info("Installing pdm in nox session")
     session.install(f"pdm>={pdm_ver}")
 
-    log.info("Installing project")
+    # log.info("Installing project")
     # session.run("pdm", "install")
 
     script_path = Path("./scripts/start_dev_containers.py")
@@ -209,4 +209,52 @@ def run_dev_containers(session: nox.Session, pdm_ver: str = PDM_VER):
         log.error(f"Could not find path: {script_path}")
     else:
         log.info("Running Docker dev containers")
+        session.run("python", script_path)
+
+
+@nox.session(name="init-db", tags=["db"])
+def initialize_database(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/db_init.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running db_init.py script")
+        session.run("python", script_path)
+
+
+@nox.session(name="start-celery-worker", tags=["celery"])
+def start_celery_worker(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_celery_worker.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running start_celery_worker.py script")
+        session.run("python", script_path)
+
+
+@nox.session(name="start-celery-beat", tags=["celery"])
+def start_celery_beat(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_celery_beat.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running start_celery_beat.py script")
         session.run("python", script_path)
