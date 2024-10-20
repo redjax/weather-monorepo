@@ -1,0 +1,90 @@
+---
+volumes:
+  rabbitmq_data:
+    driver: local
+#   redis_data:
+#     driver: local
+#   postgres_data:
+#     driver: local
+#   pgadmin_data:
+#     driver: local
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ${RABBITMQ_CONTAINER_NAME:-rabbitmq}
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      ## RabbitMQ main port
+      - ${RABBITMQ_MAIN_PORT:-5672}:5672
+      ## RabbitMQ management console
+      - ${RABBITMQ_MANAGEMENT_PORT:-15672}:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-rabbitmq}
+    volumes:
+      - ${RABBITMQ_DATA_DIR:-rabbitmq_data}:/var/lib/rabbitmq
+
+  redis:
+    image: redis:alpine
+    container_name: ${REDIS_CONTAINER_NAME:-redis}
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - ${REDIS_DATA_DIR:-redis_data}:/data
+
+  postgres:
+    image: postgres:${POSTGRES_IMAGE_TAG:-bullseye}
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
+    restart: unless-stopped
+    env_file: ./.env
+    user: "$UID:$GID"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # Read section on this variable in docker docs before setting:
+      #   https://hub.docker.com/_/postgres/
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD}
+    expose:
+      - 5432
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - ${POSTGRES_DATA_DIR:-postgres_data}:/var/lib/postgresql/data
+      # Mount directory with init scripts for docker, i.e. install UUID extension
+      - ${POSTGRES_ENTRYPOINT_DIR:-./vols/pg_entrypoint}:/docker-entrypoint-initdb.d/
+      # Mount directory to store SQL scripts
+      - ${POSTGRES_SCRIPTS_DIR:-./vols/pgsql_scripts}:/scripts
+      # Uncomment line below to restore a database backup.
+      # - ${POSTGRES_DB_BACKUP}:/path/here
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -d $${POSTGRES_DATABASE} -U $${POSTGRES_USER}",
+        ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:${PGADMIN_IMAGE_TAG:-latest}
+    container_name: ${PGADMIN_CONTAINER_NAME:-pgadmin}
+    restart: unless-stopped
+    env_file: ./.env
+    ## Uncomment if you get ErrNo 13 permission denied creating /var/lib/pgadmin
+    user: "$UID:$GID"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-pgadmin}
+      PGADMIN_LISTEN_PORT: ${PGADMIN_LISTEN_PORT:-80}
+    ports:
+      - ${PGADMIN_PORT:-15432}:80
+    volumes:
+      # - ${PGADMIN_DATA_DIR:-pgadmin_data}:/var/lib/pgadmin
+      - ${PGADMIN_DATA_DIR:-./vols/pgadmin/data}:/var/lib/pgadmin
+    depends_on:
+      - postgres

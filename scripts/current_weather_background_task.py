@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import logging
-import typing as t
 import time
+import typing as t
 
 log = logging.getLogger(__name__)
 
-from weatherapi_client.settings import WEATHERAPI_SETTINGS
-from celeryapp import celery_app, check_task
-from core.setup import setup_database, setup_logging
-from celeryapp.tasks.weather_apis.weatherapi import task_current_weather
-
 from celery.result import AsyncResult
-
-from celeryapp import CELERY_SETTINGS
-
+from celeryapp import CELERY_SETTINGS, celery_app, check_task
+from celeryapp.tasks.weather_apis.weatherapi import task_current_weather
+from core.setup import setup_database, setup_logging
+from weatherapi_client.settings import WEATHERAPI_SETTINGS
 
 def run(task_check_sleep: int = 5, location_name: str = None):
     task_result: AsyncResult = task_current_weather.delay(location_name)

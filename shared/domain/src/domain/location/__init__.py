@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import schemas, models, repository
-from .schemas import LocationIn, LocationOut
+from . import models, repository, schemas
 from .models import LocationModel
 from .repository import LocationRepository
+from .schemas import LocationIn, LocationOut

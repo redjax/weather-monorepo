@@ -7,9 +7,9 @@ log = logging.getLogger(__name__)
 
 from .settings import CELERY_SETTINGS
 from .tasks.scheduled import (
-    TASK_SCHEDULE_15m_current_weather_check,
-    TASK_SCHEDULE_10m_current_weather_row_count,
     TASK_SCHEDULE_6h_weather_forecast_check,
+    TASK_SCHEDULE_10m_current_weather_row_count,
+    TASK_SCHEDULE_15m_current_weather_check,
 )
 
 from celery import Celery, current_app

@@ -1,15 +1,16 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 
 log = logging.getLogger(__name__)
 
 from .settings import PANDAS_ENGINE
-from core.depends.db_depends import get_db_engine
 
+from core.depends.db_depends import get_db_engine
+import pandas as pd
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
-import pandas as pd
-
 
 def load_db_data(engine, query: str) -> pd.DataFrame:
     """Load data from a PostgreSQL database into a DataFrame."""

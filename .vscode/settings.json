@@ -5,6 +5,7 @@
         "./shared/http-lib/src",
         "./shared/domain/src",
         "./packages/celeryapp/src",
-        "./packages/datalab/src"
+        "./packages/datalab/src",
+        "./apps/cli-app/src"
     ]
 }

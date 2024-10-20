@@ -4,8 +4,17 @@ import logging
 
 log: logging.Logger = logging.getLogger(__name__)
 
-from core.depends import db_depends
 from core import db
+from core.depends import db_depends
+
+from dynaconf import Dynaconf
+
+LOGGING_SETTINGS = Dynaconf(
+    environments=True,
+    env="logging",
+    envvar_prefix="LOG",
+    settings_files=["settings.toml", ".secrets.toml"],
+)
 
 
 def setup_logging(

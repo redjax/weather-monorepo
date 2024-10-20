@@ -5,9 +5,10 @@ import time
 
 log = logging.getLogger(__name__)
 
-import http_lib
-from core.depends.db_depends import get_session_pool
 from . import requests
+from ..settings import weatherapi_settings
+
+from core.depends.db_depends import get_session_pool
 from domain.location import LocationIn, LocationModel, LocationOut, LocationRepository
 from domain.schemas import APIResponseCurrentWeather  # , APIResponseWeatherForecast
 from domain.weather.current import (
@@ -25,16 +26,13 @@ from domain.weather.current import (
     CurrentWeatherRepository,
 )
 from domain.weather.forecast import (
-    ForecastJSONRepository,
     ForecastJSONIn,
     ForecastJSONModel,
     ForecastJSONOut,
+    ForecastJSONRepository,
 )
-
-from ..settings import weatherapi_settings
-
+import http_lib
 import httpx
-
 
 def save_location(location: LocationIn) -> LocationOut:
     session_pool = get_session_pool()

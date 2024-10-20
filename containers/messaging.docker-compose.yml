@@ -1,0 +1,37 @@
+---
+volumes:
+  rabbitmq_data:
+    driver: local
+#   redis_data:
+#     driver: local
+#   postgres_data:
+#     driver: local
+#   pgadmin_data:
+#     driver: local
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ${RABBITMQ_CONTAINER_NAME:-rabbitmq}
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      ## RabbitMQ main port
+      - ${RABBITMQ_MAIN_PORT:-5672}:5672
+      ## RabbitMQ management console
+      - ${RABBITMQ_MANAGEMENT_PORT:-15672}:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-rabbitmq}
+    volumes:
+      - ${RABBITMQ_DATA_DIR:-rabbitmq_data}:/var/lib/rabbitmq
+
+  redis:
+    image: redis:alpine
+    container_name: ${REDIS_CONTAINER_NAME:-redis}
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - ${REDIS_DATA_DIR:-redis_data}:/data

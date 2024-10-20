@@ -3,14 +3,11 @@ from __future__ import annotations
 import logging
 import typing as t
 
-
 log = logging.getLogger(__name__)
 
-from celeryapp import celery_app, CELERY_SETTINGS
-from core.setup import setup_database, setup_logging
-
 from celery import current_app
-
+from celeryapp import CELERY_SETTINGS, celery_app
+from core.setup import setup_database, setup_logging
 
 def run(worker_log_level: str = "INFO", uid: int = 0, gid: int = 0):
     log.info("Auto-discovering Celery tasks.")

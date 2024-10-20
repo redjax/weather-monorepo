@@ -43,7 +43,7 @@ VENV_DIR = Path("./.venv").resolve()
 
 ## At minimum, these paths will be checked by your linters
 #  Add new paths with nox_utils.append_lint_paths(extra_paths=["..."],)
-DEFAULT_LINT_PATHS: list[str] = ["src", "tests", "scripts", "packages"]
+DEFAULT_LINT_PATHS: list[str] = ["src", "tests", "scripts", "packages", "shared"]
 ## Set directory for requirements.txt file output
 REQUIREMENTS_OUTPUT_DIR: Path = Path("./")
 
@@ -93,8 +93,7 @@ def check_path_exists(p: t.Union[str, Path] = None) -> bool:
 
 @nox.session(python=[DEFAULT_PYTHON], name="dev-env")
 def dev(session: nox.Session) -> None:
-    """
-    Sets up a python development environment for the project.
+    """Sets up a python development environment for the project.
 
     This session will:
     - Create a python virtualenv for the session
@@ -103,7 +102,6 @@ def dev(session: nox.Session) -> None:
     - Invoke the python interpreter from the global project environment to install
       the project and all it's development dependencies.
     """
-
     session.install("virtualenv")
     # the VENV_DIR constant is explained above
     session.run("virtualenv", os.fsdecode(VENV_DIR), silent=True)
@@ -175,3 +173,88 @@ def install_monorepo(session: nox.Session, pdm_ver: str = PDM_VER):
     session.run("pdm", "lock", external=False)
     log.info("Installing monorepo with PDM")
     session.run("pdm", "install", external=False)
+
+
+@nox.session(name="init-container-data", tags=["init", "docker"])
+def init_container_data_dir(session: nox.Session):
+    log.info("Initializing vols/ directory")
+
+    root = Path("./containers")
+
+    paths = [
+        Path(f"{root}/vols/pgadmin"),
+        Path(f"{root}/vols/postgres"),
+        Path(f"{root}/vols/redis"),
+    ]
+
+    for p in paths:
+        p = Path(f"{p}/data")
+
+        if not p.exists():
+            log.info(f"Creating directory: {p}/data")
+            p.mkdir(parents=True, exist_ok=True)
+
+
+@nox.session(name="run-dev-containers", tags=["docker"])
+def run_dev_containers(session: nox.Session, pdm_ver: str = PDM_VER):
+    log.info("Installing pdm in nox session")
+    session.install(f"pdm>={pdm_ver}")
+
+    # log.info("Installing project")
+    # session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_dev_containers.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running Docker dev containers")
+        session.run("python", script_path)
+
+
+@nox.session(name="init-db", tags=["db"])
+def initialize_database(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/db_init.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running db_init.py script")
+        session.run("python", script_path)
+
+
+@nox.session(name="start-celery-worker", tags=["celery"])
+def start_celery_worker(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_celery_worker.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running start_celery_worker.py script")
+        session.run("python", script_path)
+
+
+@nox.session(name="start-celery-beat", tags=["celery"])
+def start_celery_beat(session: nox.Session, pdm_ver: str = PDM_VER):
+    session.install(f"pdm>={pdm_ver}")
+
+    log.info("Installing project")
+    session.run("pdm", "install")
+
+    script_path = Path("./scripts/start_celery_beat.py")
+
+    if not script_path.exists():
+        log.error(f"Could not find path: {script_path}")
+    else:
+        log.info("Running start_celery_beat.py script")
+        session.run("python", script_path)

@@ -11,7 +11,6 @@ from ..db.settings import DB_SETTINGS
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 
-
 def get_db_uri(
     drivername: str = DB_SETTINGS.get("DB_drivername", default="sqlite+pysqlite"),
     username: str | None = DB_SETTINGS.get("DB_USERNAME", default=None),

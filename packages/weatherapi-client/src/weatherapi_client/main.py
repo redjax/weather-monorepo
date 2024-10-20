@@ -6,9 +6,8 @@ log = logging.getLogger(__name__)
 
 from .settings import WEATHERAPI_SETTINGS
 
-import http_lib
 from core import setup
-
+import http_lib
 
 def get_current_weather(location: str, api_key: str):
     http_ctl = http_lib.get_http_controller()
