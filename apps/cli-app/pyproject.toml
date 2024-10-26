@@ -1,13 +1,17 @@
 [project]
-name = "cli_app"
+name = "cli-app"
 version = "0.1.0"
-description = "Default template for PDM package"
-authors = [{ name = "redjax", email = "none@none.com" }]
-dependencies = []
-requires-python = "==3.11.*"
+description = "Add your description here"
 readme = "README.md"
-license = { text = "MIT" }
+authors = [
+    { name = "redjax", email = "no@none.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
 
+[project.scripts]
+cli-app = "cli_app:main"
 
-[tool.pdm]
-distribution = false
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

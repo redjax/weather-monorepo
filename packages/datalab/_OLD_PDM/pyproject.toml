@@ -1,0 +1,20 @@
+[project]
+name = "datalab"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [{ name = "redjax", email = "none@none.com" }]
+dependencies = []
+requires-python = "==3.11.*"
+readme = "README.md"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = ["jupyter>=1.1.1"]

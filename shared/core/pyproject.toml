@@ -1,17 +1,17 @@
 [project]
 name = "core"
 version = "0.1.0"
-description = "Default template for PDM package"
-authors = [{ name = "redjax", email = "none@none.com" }]
-dependencies = []
-requires-python = "==3.11.*"
+description = "Add your description here"
 readme = "README.md"
-license = { text = "MIT" }
+authors = [
+    { name = "redjax", email = "no@none.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
 
-
-[tool.pdm]
-distribution = true
+[project.scripts]
+core = "core:main"
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
