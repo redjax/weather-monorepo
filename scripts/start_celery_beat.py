@@ -9,6 +9,7 @@ from celery import Celery
 from celeryapp import CELERY_SETTINGS, celery_app
 from core.setup import setup_database, setup_logging
 
+
 def run(log_level: str = "INFO"):
     log.info("Start Celery beat")
 
@@ -25,7 +26,7 @@ def run(log_level: str = "INFO"):
 
 if __name__ == "__main__":
     setup_logging()
-    setup_database()
+    # setup_database()
 
     try:
         run(log_level=CELERY_SETTINGS.get("CELERY_BEAT_LOG_LEVEL", default="INFO"))
