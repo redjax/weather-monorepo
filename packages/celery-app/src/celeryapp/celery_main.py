@@ -61,6 +61,8 @@ def return_celery_backend_url(
     if proto == "redis":
         backend_url: str = f"{backend_url}/0"
 
+    log.debug(f"Backend URL: {backend_url}")
+
     return backend_url
 
 
