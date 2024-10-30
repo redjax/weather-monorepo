@@ -8,6 +8,7 @@ from pathlib import Path
 import platform
 import sys
 import typing as t
+import shutil
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ nox.options.error_on_missing_interpreters = False
 # nox.options.report = True
 
 ## Instruct PDM to use nox's Python
-os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
+os.environ.update({"UV_NO_CACH": "1"})
 
 ## Define versions to test
 PY_VERSIONS: list[str] = ["3.12", "3.11"]
@@ -33,8 +34,6 @@ PY_VER_TUPLE: tuple[str, str, str] = platform.python_version_tuple()
 ## Dynamically set Python version
 DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
 
-## PDM version for sessions that use it
-PDM_VER: str = "2.18.1"
 
 # this VENV_DIR constant specifies the name of the dir that the `dev`
 # session will create, containing the virtualenv;
@@ -46,6 +45,10 @@ VENV_DIR = Path("./.venv").resolve()
 DEFAULT_LINT_PATHS: list[str] = ["src", "tests", "scripts", "packages", "shared"]
 ## Set directory for requirements.txt file output
 REQUIREMENTS_OUTPUT_DIR: Path = Path("./")
+
+NOX_COMPOSE_FILE = (
+    os.environ.get("NOX_COMPOSE_FILE") or "containers/dev.docker-compose.yml"
+)
 
 logging.basicConfig(
     level="DEBUG",
@@ -91,6 +94,107 @@ def check_path_exists(p: t.Union[str, Path] = None) -> bool:
     return _exists
 
 
+def install_uv_project(session: nox.Session, external: bool = False) -> None:
+    """Method to install uv and the current project in a nox session."""
+    log.info("Installing uv in session")
+    session.install("uv")
+    log.info("Syncing uv project")
+    session.run("uv", "sync", external=external)
+    log.info("Installing project")
+    session.run("uv", "pip", "install", ".", external=external)
+
+
+def run_docker_cmd(session: nox.Session, compose_file: str, operation: str):
+    if compose_file is None:
+        raise ValueError("Missing a compose_file value.")
+
+    if operation is None:
+        raise ValueError("operation should not be None")
+
+    if not check_path_exists(p=compose_file):
+        raise FileNotFoundError(f"Could not find compose file: {compose_file}")
+
+    valid_operations: list[str] = [
+        "build",
+        "build-no-cache",
+        "up",
+        "up-build",
+        "up-recreate",
+        "down",
+    ]
+
+    match operation:
+        case "build":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "build",
+                external=True,
+            )
+        case "build-no-cache":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "build",
+                "--no-cache",
+                external=True,
+            )
+        case "up":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "up",
+                "-d",
+                external=True,
+            )
+        case "up-build":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "up",
+                "-d",
+                "--build",
+                external=True,
+            )
+        case "up-recreate":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "up",
+                "-d",
+                "--force-recreate",
+                external=True,
+            )
+        case "down" | "stop":
+            session.run(
+                "docker",
+                "compose",
+                "-f",
+                compose_file,
+                "down",
+                external=True,
+            )
+        case _:
+            raise ValueError(
+                f"Invalid Docker compose operation: {operation}. Must be one of {valid_operations}"
+            )
+
+
+##############
+# Repository #
+##############
+
+
 @nox.session(python=[DEFAULT_PYTHON], name="dev-env")
 def dev(session: nox.Session) -> None:
     """Sets up a python development environment for the project.
@@ -102,15 +206,7 @@ def dev(session: nox.Session) -> None:
     - Invoke the python interpreter from the global project environment to install
       the project and all it's development dependencies.
     """
-    session.install("virtualenv")
-    # the VENV_DIR constant is explained above
-    session.run("virtualenv", os.fsdecode(VENV_DIR), silent=True)
-
-    python = os.fsdecode(VENV_DIR.joinpath("bin/python"))
-
-    # Use the venv's interpreter to install the project along with
-    # all it's dev dependencies, this ensures it's installed in the right way
-    session.run("pdm", "install", external=True)
+    install_uv_project(session)
 
 
 @nox.session(python=[DEFAULT_PYTHON], name="ruff-lint", tags=["ruff", "clean", "lint"])
@@ -162,12 +258,77 @@ Double check imports in __init__.py files, ruff removes unused imports by defaul
     )
 
 
-@nox.session(python=[DEFAULT_PYTHON], name="install-repo")
-def install_monorepo(session: nox.Session, pdm_ver: str = PDM_VER):
-    log.info("Building & installing PDM monorepo")
+@nox.session(python=[DEFAULT_PYTHON], name="uv-export")
+@nox.parametrize("requirements_output_dir", REQUIREMENTS_OUTPUT_DIR)
+def export_requirements(session: nox.Session, requirements_output_dir: Path):
+    ## Ensure REQUIREMENTS_OUTPUT_DIR path exists
+    if not requirements_output_dir.exists():
+        try:
+            requirements_output_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as exc:
+            msg = Exception(
+                f"Unable to create requirements export directory: '{requirements_output_dir}'. Details: {exc}"
+            )
+            log.error(msg)
 
-    log.info("Installing pdm in nox session")
-    session.install(f"pdm>={pdm_ver}")
+            requirements_output_dir: Path = Path("./")
+
+    session.install(f"uv")
+
+    log.info("Exporting production requirements")
+    session.run(
+        "uv",
+        "pip",
+        "compile",
+        "pyproject.toml",
+        "-o",
+        str(REQUIREMENTS_OUTPUT_DIR / "requirements.txt"),
+    )
+
+
+@nox.session(name="fresh-clone-setup", tags=["init"])
+def fresh_clone_setup(session: nox.Session):
+    copy_files = [
+        {"src": "./config/settings.toml", "dst": "./config/settings.local.toml"},
+        {"src": "./config/db/settings.toml", "dst": "./config/db/settings.local.toml"},
+        {
+            "src": "./config/db/.secrets.example.toml",
+            "dst": "./config/db/.secrets.toml",
+        },
+        {
+            "src": "./config/apis/weatherapi/settings.toml",
+            "dst": "./config/apis/weatherapi/settings.local.toml",
+        },
+        {
+            "src": "./config/celery/settings.toml",
+            "dst": "./config/celery/settings.local.toml",
+        },
+        {"src": "./containers/.env.example", "dst": "./containers/.env"},
+        {
+            "src": "./containers/.env.example",
+            "dst": "./containers/.env",
+        },
+    ]
+
+    log.info(f"Copying config files to locally editable versions")
+    for _file in copy_files:
+        if Path(_file["dst"]).exists():
+            log.info(f"Path '{_file['dst']} already exists. Skipping copy.")
+            continue
+
+        log.info(f"Copying '{_file['src']}' to '{_file['dst']}")
+        try:
+            shutil.copy(src=_file["src"], dst=_file["dst"])
+        except Exception as exc:
+            msg = f"({type(exc)}) Error copying file '{_file['src']}' to location '{_file['dst']}'. Details: {exc}"
+            log.error(msg)
+
+            continue
+
+
+@nox.session(python=[DEFAULT_PYTHON], name="install-repo")
+def install_monorepo(session: nox.Session):
+    install_uv_project(session)
 
     log.info("Locking dependencies")
     session.run("pdm", "lock", external=False)
@@ -195,29 +356,9 @@ def init_container_data_dir(session: nox.Session):
             p.mkdir(parents=True, exist_ok=True)
 
 
-@nox.session(name="run-dev-containers", tags=["docker"])
-def run_dev_containers(session: nox.Session, pdm_ver: str = PDM_VER):
-    log.info("Installing pdm in nox session")
-    session.install(f"pdm>={pdm_ver}")
-
-    # log.info("Installing project")
-    # session.run("pdm", "install")
-
-    script_path = Path("./scripts/start_dev_containers.py")
-
-    if not script_path.exists():
-        log.error(f"Could not find path: {script_path}")
-    else:
-        log.info("Running Docker dev containers")
-        session.run("python", script_path)
-
-
 @nox.session(name="init-db", tags=["db"])
-def initialize_database(session: nox.Session, pdm_ver: str = PDM_VER):
-    session.install(f"pdm>={pdm_ver}")
-
-    log.info("Installing project")
-    session.run("pdm", "install")
+def initialize_database(session: nox.Session):
+    install_uv_project(session)
 
     script_path = Path("./scripts/db_init.py")
 
@@ -228,33 +369,192 @@ def initialize_database(session: nox.Session, pdm_ver: str = PDM_VER):
         session.run("python", script_path)
 
 
+###################
+# Celery Sessions #
+###################
+
+
 @nox.session(name="start-celery-worker", tags=["celery"])
-def start_celery_worker(session: nox.Session, pdm_ver: str = PDM_VER):
-    session.install(f"pdm>={pdm_ver}")
+def start_celery_worker(session: nox.Session):
+    install_uv_project(session)
 
-    log.info("Installing project")
-    session.run("pdm", "install")
-
-    script_path = Path("./scripts/start_celery_worker.py")
-
-    if not script_path.exists():
-        log.error(f"Could not find path: {script_path}")
-    else:
-        log.info("Running start_celery_worker.py script")
-        session.run("python", script_path)
+    log.info("Starting Celery worker")
+    session.run("uv", "run", "./scripts/start_celery_worker.py")
 
 
 @nox.session(name="start-celery-beat", tags=["celery"])
-def start_celery_beat(session: nox.Session, pdm_ver: str = PDM_VER):
-    session.install(f"pdm>={pdm_ver}")
+def start_celery_beat(session: nox.Session):
+    install_uv_project(session)
 
-    log.info("Installing project")
-    session.run("pdm", "install")
+    log.info("Starting Celery beat")
+    session.run("uv", "run", "./scripts/start_celery_beat.py")
 
-    script_path = Path("./scripts/start_celery_beat.py")
+
+####################
+# Alembic Sessions #
+####################
+
+
+@nox.session(python=[DEFAULT_PYTHON], name="alembic-init", tags=["alembic"])
+def run_alembic_initialization(session: nox.Session):
+    if Path("./migrations").exists():
+        log.warning(
+            "Migrations directory [./migrations] exists. Skipping alembic init."
+        )
+        return
+    install_uv_project(session)
+
+    log.info("Initializing Alembic database")
+    session.run("uv", "run", "alembic", "init", "migrations")
+
+    log.info(
+        """
+!! READ THIS !!
+
+Alembic initialized at path ./migrations.
+
+You must edit migrations/env.py to configure your project.
+
+If you're using a "src" layout, add this to the top of your code:
+
+import sys
+
+sys.path.append("./src")
+
+Import your SQLAlchemy models (look for the commented sections describing model imports),
+set your SQLAlchemy Base.metadata, and set the database URI.
+
+If you're using Dynaconf, i.e. in a `db.settings.DB_SETTINGS` object, you can set the
+database URI like:
+
+## Get database URI from config
+#  !! You have to write this function !!
+DB_URI = get_db_uri()
+## Set alembic's SQLAlchemy URL
+if DB_URI:
+    config.set_main_option(
+        "sqlalchemy.url", DB_URI.render_as_string(hide_password=False)
+    )
+else:
+    raise Exception("DATABASE_URL not found in Dynaconf settings")
+    
+!! READ THIS !! 
+"""
+    )
+
+
+@nox.session(name="alembic-migrate", tags=["alembic"])
+def do_alembic_migration(session: nox.Session):
+    install_uv_project(session)
+
+    log.info("Doing alembic automigration")
+    session.run(
+        "uv",
+        "run",
+        "alembic",
+        "revision",
+        "--autogenerate",
+        "-m",
+        "autogenerated migration",
+    )
+    session.run("uv", "run", "alembic", "upgrade", "head")
+
+
+##########
+# Docker #
+##########
+
+
+@nox.session(name="init-container-data", tags=["init", "docker"])
+def init_container_data_dir(session: nox.Session):
+    log.info("Initializing vols/ directory")
+
+    root = Path("./containers")
+
+    paths = [
+        Path(f"{root}/vols/pgadmin"),
+        Path(f"{root}/vols/postgres"),
+        Path(f"{root}/vols/mariadb"),
+        Path(f"{root}/vols/redis"),
+        Path(f"{root}/vols/rabbitmq"),
+    ]
+
+    for p in paths:
+        p = Path(f"{p}/data")
+
+        if not p.exists():
+            log.info(f"Creating directory: {p}/data")
+            p.mkdir(parents=True, exist_ok=True)
+
+    for p in [
+        Path(f"{root}/vols/postgres/pg_entrypoint"),
+        Path(f"{root}/vols/postgres/pgsql_scripts"),
+    ]:
+        if not p.exists():
+            log.info(f"Creating directory: {p}")
+            p.mkdir(parents=True, exist_ok=True)
+
+
+@nox.session(name="run-dev-containers", tags=["docker"])
+def run_dev_containers(session: nox.Session):
+    install_uv_project(session)
+
+    script_path = Path("./scripts/start_dev_containers.py")
 
     if not script_path.exists():
         log.error(f"Could not find path: {script_path}")
     else:
-        log.info("Running start_celery_beat.py script")
+        log.info("Running Docker dev containers")
         session.run("python", script_path)
+
+
+@nox.session(name="compose-build", tags=["docker"])
+def rebuild_dev_containers(session: nox.Session):
+    log.info("Rebuilding Docker dev containers")
+    run_docker_cmd(session, compose_file=NOX_COMPOSE_FILE, operation="build")
+
+
+@nox.session(name="compose-build-nocache", tags=["docker"])
+def rebuild_dev_containers_no_cache(session: nox.Session):
+    log.info("Rebuilding Docker dev containers without cache")
+    run_docker_cmd(
+        session,
+        compose_file=NOX_COMPOSE_FILE,
+        operation="build-no-cache",
+    )
+
+
+@nox.session(name="compose-up", tags=["docker"])
+def run_dev_containers(session: nox.Session):
+    log.info("Bringing Docker dev stack up")
+    run_docker_cmd(
+        session,
+        compose_file=NOX_COMPOSE_FILE,
+        operation="up",
+    )
+
+
+@nox.session(name="compose-up-build", tags=["docker"])
+def build_run_dev_containers(session: nox.Session):
+    log.info("Rebuilding containers & bringing Docker dev stack up")
+    run_docker_cmd(
+        session,
+        compose_file=NOX_COMPOSE_FILE,
+        operation="up-build",
+    )
+
+
+@nox.session(name="compose-up-recreate", tags=["docker"])
+def recreate_dev_containers(session: nox.Session):
+    log.info("Bringing Docker dev stack up, restarting all containers")
+    run_docker_cmd(
+        session,
+        compose_file=NOX_COMPOSE_FILE,
+        operation="up-recreate",
+    )
+
+
+@nox.session(name="compose-down", tags=["docker"])
+def rebuild_dev_containers(session: nox.Session):
+    log.info("Stopping Docker dev containers")
+    run_docker_cmd(session, compose_file=NOX_COMPOSE_FILE, operation="down")
