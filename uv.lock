@@ -861,6 +861,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "celery-app" },
+    { name = "cli-app" },
     { name = "core" },
     { name = "domain" },
     { name = "http-lib" },
@@ -888,6 +889,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "celery-app", editable = "packages/celery-app" },
+    { name = "cli-app", editable = "apps/cli-app" },
     { name = "core", editable = "shared/core" },
     { name = "domain", editable = "shared/domain" },
     { name = "http-lib", editable = "shared/http-lib" },

@@ -40,6 +40,9 @@ def return_celery_broker_url(
     host: str = "localhost",
     proto: str = "amqp",
 ) -> str:
+    print(f"Broker user: {user}")
+    print(f"Broker password: {password}")
+
     if user and password:
         broker_url: str = f"{proto}://{user}:{password}@{host}"
     else:
@@ -49,6 +52,7 @@ def return_celery_broker_url(
         broker_url = f"{broker_url}:{port}"
 
     log.debug(f"Broker URL: {broker_url}")
+    print(f"BROKER URL: {broker_url}")
 
     return broker_url
 
@@ -66,17 +70,22 @@ def return_celery_backend_url(
     return backend_url
 
 
+print(f"Celery settings: {CELERY_SETTINGS.as_dict()}")
+
 BROKER_URL: str = return_celery_broker_url(
-    user=CELERY_SETTINGS.get("CELERY_BROKER_USER", default=""),
-    password=CELERY_SETTINGS.get("CELERY_BROKER_PASSWORD", default=""),
-    host=CELERY_SETTINGS.get("CELERY_BROKER_HOST", default="localhost"),
-    port=CELERY_SETTINGS.get("CELERY_BROKER_PORT", default=None),
+    user=CELERY_SETTINGS.get("BROKER_USER", default=""),
+    password=CELERY_SETTINGS.get("BROKER_PASSWORD", default=""),
+    host=CELERY_SETTINGS.get("BROKER_HOST", default="localhost"),
+    port=CELERY_SETTINGS.get("BROKER_PORT", default=None),
 )
 
 BACKEND_URL: str = return_celery_backend_url(
-    host=CELERY_SETTINGS.get("CELERY_BACKEND_HOST", default=""),
-    port=CELERY_SETTINGS.get("CELERY_BACKEND_PORT", default=None),
+    host=CELERY_SETTINGS.get("BACKEND_HOST", default=""),
+    port=CELERY_SETTINGS.get("BACKEND_PORT", default=None),
 )
+
+print(f"Celery broker URL: {BROKER_URL}")
+print(f"Celery backend URL: {BACKEND_URL}")
 
 celery_app = Celery(
     "celeryapp",

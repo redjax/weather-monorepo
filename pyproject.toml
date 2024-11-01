@@ -26,6 +26,7 @@ dependencies = [
 package = false
 dev-dependencies = [
     "celery-app",
+    "cli-app",
     "core",
     "domain",
     "http-lib",
@@ -41,6 +42,7 @@ weatherapi-client = { workspace = true }
 core = { workspace = true }
 domain = { workspace = true }
 http-lib = { workspace = true }
+cli-app = { workspace = true }
 
 ## Fix 'error: Multiple top-level packages discovered in flat-layout'
 #  https://github.com/pypa/setuptools/issues/3197#issuecomment-1078770109
