@@ -116,7 +116,7 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       WEATHERAPI_API_KEY: ${WEATHERAPI_API_KEY}
-      WEATHERAPI_LOCATION: ${WEATHERAPI_API_LOCATION:-London}
+      WEATHERAPI_LOCATION_NAME: ${WEATHERAPI_API_LOCATION:-London}
 
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_DRIVERNAME: ${DB_DRIVERNAME:-postgres+psycopg2}
@@ -160,7 +160,7 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       WEATHERAPI_API_KEY: ${WEATHERAPI_API_KEY}
-      WEATHERAPI_LOCATION: ${WEATHERAPI_API_LOCATION:-London}
+      WEATHERAPI_LOCATION_NAME: ${WEATHERAPI_API_LOCATION:-London}
 
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_DRIVERNAME: ${DB_DRIVERNAME:-postgres+psycopg2}

@@ -26,7 +26,7 @@ def run(log_level: str = "INFO"):
 
 if __name__ == "__main__":
     setup_logging()
-    # setup_database()
+    setup_database()
 
     try:
         run(log_level=CELERY_SETTINGS.get("CELERY_BEAT_LOG_LEVEL", default="INFO"))

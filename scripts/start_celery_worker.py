@@ -45,7 +45,7 @@ def run(worker_log_level: str = "INFO", uid: int = 0, gid: int = 0):
 
 if __name__ == "__main__":
     setup_logging()
-    # setup_database()
+    setup_database()
 
     run(
         worker_log_level=CELERY_SETTINGS.get("CELERY_WORKER_LOG_LEVEL", default="INFO"),
