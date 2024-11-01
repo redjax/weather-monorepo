@@ -143,3 +143,47 @@ services:
       CELERY_TZ: ${CELERY_TZ:-Etc/UTC}
     networks:
       - weather-monorepo_net
+
+  celery_beat:
+    container_name: weather-monorepo_celery_beat
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: containers/celery.Dockerfile
+      target: beat
+    env_file: .env
+    volumes:
+      - ../apps:/project/apps
+      - ../packages:/project/packages
+      - ../scripts:/project/scripts
+      - ../shared:/project/shared
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WEATHERAPI_API_KEY: ${WEATHERAPI_API_KEY}
+      WEATHERAPI_LOCATION: ${WEATHERAPI_API_LOCATION:-London}
+
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_DRIVERNAME: ${DB_DRIVERNAME:-postgres+psycopg2}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DATABASE:-postgres}
+      DB_ECHO: ${DB_ECHO:-false}
+
+      CELERY_BROKER_HOST: ${CELERY_HOST:-rabbitmq}
+      CELERY_BROKER_PORT: ${RABBITMQ_MAIN_PORT:-5672}
+      CELERY_BROKER_USER: ${RABBITMQ_USER:-rabbitmq}
+      CELERY_BROKER_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq}
+
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST:-redis}
+      CELERY_BACKEND_PORT: ${REDIS_PORT:-6379}
+
+      CELERY_WORKER_LOG_LEVEL: ${CELERY_WORKER_LOG_LEVEL:-INFO}
+      CELERY_WORKER_UID: ${CELERY_WORKER_GID:-0}
+      CELERY_WORKER_GID: ${CELERY_WORKER_GID:-0}
+
+      CELERY_BEAT_LOG_LEVEL: ${CELERY_BEAT_LOG_LEVEL:-INFO}
+      CELERY_TZ: ${CELERY_TZ:-Etc/UTC}
+    networks:
+      - weather-monorepo_net
